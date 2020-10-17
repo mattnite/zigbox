@@ -11,8 +11,9 @@ pub fn colon(allocator: *Allocator, it: *ArgIterator) !void {
 }
 
 pub fn arch(allocator: *Allocator, it: *ArgIterator) !void {
-    // TODO: print properly
+    // TODO: remove Arch. from beginning of print
     try stdout.print("{}\n", .{std.builtin.arch});
+    return error.Todo;
 }
 
 pub fn ascii(allocator: *Allocator, it: *ArgIterator) !void {
@@ -61,6 +62,8 @@ pub fn base64(allocator: *Allocator, it: *ArgIterator) !void {
 
         _ = try stdout.write(buf_encoded[0..enc_n]);
         _ = try stdout.write("\n");
+
+        return error.Todo;
     } else {
         return error.Todo;
     }

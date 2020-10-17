@@ -30,7 +30,7 @@ fn compare(context: void, lhs_comm: Command, rhs_comm: Command) Order {
         Order.eq;
 }
 
-fn less_than(context: void, lhs: Command, rhs: Command) bool {
+fn lessThan(context: void, lhs: Command, rhs: Command) bool {
     return compare({}, lhs, rhs) == .lt;
 }
 
@@ -42,7 +42,7 @@ const commands = comptime blk: {
         .{ .name = "base64", .func = base64 },
     };
 
-    sort(Command, &ret, {}, less_than);
+    sort(Command, &ret, {}, lessThan);
     break :blk ret;
 };
 
