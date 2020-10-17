@@ -3,7 +3,7 @@
 [x] :
 [ ] \[
 [ ] acpi
-[x] arch
+[ ] arch
 [x] ascii
 [ ] base64
 [ ] basename
