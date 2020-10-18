@@ -5,8 +5,13 @@ const std = @import("std");
 const clap = @import("clap");
 const ArgIterator = @import("arg_iterator.zig");
 
+const c = @cImport({
+    @cInclude("toys.h");
+});
+
 const Order = std.math.Order;
 const Allocator = std.mem.Allocator;
+const stderr = std.io.getStdErr().writer();
 
 const Command = struct {
     name: []const u8,
@@ -21,7 +26,7 @@ fn compare(context: void, lhs_comm: Command, rhs_comm: Command) Order {
     const n = std.math.min(lhs.len, rhs.len);
     while (i < n and lhs[i] == rhs[i]) : (i += 1) {}
     return if (i == n)
-        Order.eq
+        std.math.order(lhs.len, rhs.len)
     else if (lhs[i] > rhs[i])
         Order.gt
     else if (lhs[i] < rhs[i])
@@ -36,7 +41,6 @@ fn lessThan(context: void, lhs: Command, rhs: Command) bool {
 
 const commands = comptime blk: {
     var ret = [_]Command{
-        .{ .name = ":", .func = colon },
         .{ .name = "arch", .func = arch },
         .{ .name = "ascii", .func = ascii },
         .{ .name = "base64", .func = base64 },
@@ -45,6 +49,8 @@ const commands = comptime blk: {
     sort(Command, &ret, {}, lessThan);
     break :blk ret;
 };
+
+extern fn tb_main(argc: c_int, argv: [*c][*c]u8) c_int;
 
 pub fn main() anyerror!void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
@@ -57,9 +63,12 @@ pub fn main() anyerror!void {
     _ = try it.next();
     const sub = Command{
         .name = (try it.next()) orelse return error.MissingCommand,
-        .func = colon,
+        .func = undefined,
     };
 
-    const index = binarySearch(Command, sub, &commands, {}, compare) orelse return error.NoCommand;
-    try commands[index].func(&arena.allocator, &it);
+    if (binarySearch(Command, sub, &commands, {}, compare)) |index| {
+        try commands[index].func(&arena.allocator, &it);
+    } else {
+        _ = tb_main(@intCast(c_int, std.os.argv.len), @ptrCast([*c][*c]u8, std.os.argv.ptr));
+    }
 }

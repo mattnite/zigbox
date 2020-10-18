@@ -214,7 +214,7 @@ void toybox_main(void)
   xputc('\n');
 }
 
-int main(int argc, char *argv[])
+int tb_main(int argc, char *argv[])
 {
   // don't segfault if our environment is crazy
   if (!*argv) return 127;

@@ -6,10 +6,6 @@ const stdout = std.io.getStdOut().writer();
 const stdin = std.io.getStdIn().reader();
 const Allocator = std.mem.Allocator;
 
-pub fn colon(allocator: *Allocator, it: *ArgIterator) !void {
-    std.process.exit(0);
-}
-
 pub fn arch(allocator: *Allocator, it: *ArgIterator) !void {
     // TODO: remove Arch. from beginning of print
     try stdout.print("{}\n", .{std.builtin.arch});
@@ -17,7 +13,7 @@ pub fn arch(allocator: *Allocator, it: *ArgIterator) !void {
 }
 
 pub fn ascii(allocator: *Allocator, it: *ArgIterator) !void {
-    _ = try stdout.write(
+    try stdout.writeAll(
         \\Dec Hex    Dec Hex    Dec Hex  Dec Hex  Dec Hex  Dec Hex   Dec Hex   Dec Hex
         \\  0 00 NUL  16 10 DLE  32 20    48 30 0  64 40 @  80 50 P   96 60 `  112 70 p
         \\  1 01 SOH  17 11 DC1  33 21 !  49 31 1  65 41 A  81 51 Q   97 61 a  113 71 q

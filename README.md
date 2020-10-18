@@ -1,7 +1,21 @@
 # Zig Roadmap:
 
-- [x] :
-- [ ] \[
+## Configuration options we gonna have:
+
+- SUID
+- security blanket:
+	- LSM\_NONE
+	- SELINUX
+	- SMACK <- for things like ls in Tizen
+- LIBCRYPTO
+- LIBZ
+- FLOAT
+- HELP: include help text for each command
+- HELP\_DASHDASH
+- FORCE\_NOMMU
+
+## Commands
+
 - [ ] acpi
 - [ ] arch
 - [x] ascii
@@ -112,7 +126,6 @@
 - [ ] mountpoint
 - [ ] mv
 - [ ] nbd-client
-- [ ] nbd\_client
 - [ ] nc
 - [ ] netcat
 - [ ] netstat
@@ -131,7 +144,7 @@
 - [ ] pidof
 - [ ] ping
 - [ ] ping6
-- [ ] pivot\_root
+- [ ] pivot_root
 - [ ] pkill
 - [ ] pmap
 - [ ] poweroff
