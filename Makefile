@@ -5,7 +5,7 @@
 # Note that CC defaults to "cc" so the one in configure doesn't get
 # used when scripts/make.sh and care called through "make".
 
-HOSTCC?=zig cc
+HOSTCC?=cc
 
 export CROSS_COMPILE CFLAGS OPTIMIZE LDOPTIMIZE CC HOSTCC V STRIP
 
