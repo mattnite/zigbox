@@ -4,6 +4,7 @@
  */
 
 #include "toys.h"
+#include "main.h"
 
 // Populate toy_list[].
 

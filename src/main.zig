@@ -7,6 +7,7 @@ const ArgIterator = @import("arg_iterator.zig");
 
 const c = @cImport({
     @cInclude("toys.h");
+    @cInclude("main.h");
 });
 
 const Order = std.math.Order;
@@ -50,8 +51,6 @@ const commands = comptime blk: {
     break :blk ret;
 };
 
-extern fn tb_main(argc: c_int, argv: [*c][*c]u8) c_int;
-
 pub fn main() anyerror!void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
     var arena = std.heap.ArenaAllocator.init(&gpa.allocator);
@@ -69,6 +68,6 @@ pub fn main() anyerror!void {
     if (binarySearch(Command, sub, &commands, {}, compare)) |index| {
         try commands[index].func(&arena.allocator, &it);
     } else {
-        _ = tb_main(@intCast(c_int, std.os.argv.len), @ptrCast([*c][*c]u8, std.os.argv.ptr));
+        _ = c.tb_main(@intCast(c_int, std.os.argv.len), @ptrCast([*:null]?[*:0]u8, std.os.argv));
     }
 }
