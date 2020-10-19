@@ -7,10 +7,12 @@ pub fn build(b: *Builder) void {
         target.abi = .musl;
     }
 
-    const mode = b.standardReleaseOptions();
     const exe = b.addExecutable("toybox", "src/main.zig");
+
+    // TODO: for some reason we get SIGILL when not building C code with
+    // ReleaseFast
+    exe.setBuildMode(.ReleaseFast);
     exe.setTarget(target);
-    exe.setBuildMode(mode);
     exe.single_threaded = true;
     exe.addIncludeDir(".");
     exe.addIncludeDir("lib");
