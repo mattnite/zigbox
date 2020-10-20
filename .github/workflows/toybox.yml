@@ -12,12 +12,12 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Setup
-      run: brew install gnu-sed
-    - name: Configure
-      run: make macos_defconfig
+    - name: Setup Zig
+      uses: goto-bus-stop/setup-zig@v1
+      with:
+        version: master
     - name: Build
-      run: make
+      run: zig build
     - name: Test
       run: VERBOSE=1 make tests
 
@@ -26,11 +26,11 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Setup
-      run: sudo apt-get install build-essential
-    - name: Configure
-      run: make defconfig
+    - name: Setup Zig
+      uses: goto-bus-stop/setup-zig@v1
+      with:
+        version: master
     - name: Build
-      run: make
+      run: zig build
     - name: Test
       run: VERBOSE=1 make tests
