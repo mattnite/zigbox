@@ -69,6 +69,3 @@ jobs:
     - name: Build
       run: zig build
       working-directory: zigbox
-    - name: Test
-      run: VERBOSE=1 make tests
-      working-directory: zigbox
