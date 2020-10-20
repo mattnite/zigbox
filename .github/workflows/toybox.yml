@@ -13,6 +13,7 @@ jobs:
     runs-on: macos-10.15
 
     steps:
+    
     - uses: actions/checkout@v2
     - name: Setup Zig
       uses: goto-bus-stop/setup-zig@v1
@@ -27,11 +28,25 @@ jobs:
     runs-on: ubuntu-20.04
 
     steps:
-    - uses: actions/checkout@v2
+    - name: Checkout libgit2
+      uses: actions/checkout@master
+      with:
+        repository: libgit2/libgit2
+    - name: Configure cmake
+      run: cmake --configure .
+    - name: Build and Install libgit2
+      run: sudo cmake --build . --target install
     - name: Setup Zig
       uses: goto-bus-stop/setup-zig@v1
       with:
         version: master
+    - name: Checkout Zkg
+      uses: actions/checkout@master
+      with:
+        repository: mattnite/zkg
+    - name: Build and Install Zkg
+      run: zig build
+    - run: ../zkg/zig-cache/zkg fetch
     - name: Build
       run: zig build
     - name: Test
