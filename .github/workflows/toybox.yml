@@ -36,9 +36,13 @@ jobs:
         path: libgit2
 
     - name: Configure cmake
-      run: cmake --configure libgit2
+      run: cmake --configure .
+      working-directory: libgit2
+  
     - name: Build and Install libgit2
-      run: sudo cmake --build libgit2 --target install
+      run: sudo cmake --build . --target install
+      working-directory: libgit2
+
     - name: Setup Zig
       uses: goto-bus-stop/setup-zig@v1
       with:
