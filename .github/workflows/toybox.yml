@@ -13,7 +13,7 @@ jobs:
     runs-on: macos-10.15
 
     steps:
-    - uses: actions/checkout@v2
+
     - name: Install libgit2
       run: brew install libgit2
     - name: Setup Zig
@@ -33,6 +33,7 @@ jobs:
       uses: actions/checkout@master
       with:
         repository: libgit2/libgit2
+        path: libgit2
 
     - name: Configure cmake
       run: cmake --configure .
@@ -42,16 +43,14 @@ jobs:
       uses: goto-bus-stop/setup-zig@v1
       with:
         version: master
-
+    - run: ls
     - name: Checkout Zkg
       uses: actions/checkout@master
       with:
         repository: mattnite/zkg
         submodules: recursive
         path: zkg
-    - run: pwd
-    - run: cd zkg
-    - run: pwd
+    - run: ls
     - name: Build Zkg
       run: zig build
     - run: cd $GITHUB_WORKSPACE
