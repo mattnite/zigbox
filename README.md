@@ -17,7 +17,7 @@
 ## Commands
 
 - [ ] acpi
-- [ ] arch
+- [x] arch
 - [x] ascii
 - [ ] base64
 - [ ] basename
@@ -200,7 +200,7 @@
 - [ ] tunctl
 - [ ] ulimit
 - [ ] umount
-- [ ] uname
+- [x] uname
 - [ ] uniq
 - [ ] unix2dos
 - [ ] unlink

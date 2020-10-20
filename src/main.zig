@@ -45,6 +45,7 @@ const commands = comptime blk: {
         .{ .name = "arch", .func = arch },
         .{ .name = "ascii", .func = ascii },
         .{ .name = "base64", .func = base64 },
+        .{ .name = "uname", .func = uname },
     };
 
     sort(Command, &ret, {}, lessThan);

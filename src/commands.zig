@@ -7,9 +7,22 @@ const stdin = std.io.getStdIn().reader();
 const Allocator = std.mem.Allocator;
 
 pub fn arch(allocator: *Allocator, it: *ArgIterator) !void {
-    // TODO: remove Arch. from beginning of print
-    try stdout.print("{}\n", .{std.builtin.arch});
-    return error.Todo;
+    const params = comptime [_]clap.Param(clap.Help){
+        clap.parseParam("-h, --help Display this help and exit") catch unreachable,
+    };
+
+    var args = try clap.ComptimeClap(clap.Help, &params).parse(allocator, ArgIterator, it);
+    defer args.deinit();
+
+    if (args.flag("--help")) {
+        try stdout.print("Usage: arch ", .{});
+        try clap.usage(stdout, &params);
+        try stdout.print("\n\nPrint machine (hardware) name, same as uname -m.\n\n", .{});
+        try clap.help(stdout, &params);
+        return;
+    }
+
+    try stdout.print("{}\n", .{std.os.uname().machine});
 }
 
 pub fn ascii(allocator: *Allocator, it: *ArgIterator) !void {
@@ -63,4 +76,67 @@ pub fn base64(allocator: *Allocator, it: *ArgIterator) !void {
     } else {
         return error.Todo;
     }
+}
+
+pub fn uname(allocator: *Allocator, it: *ArgIterator) !void {
+    @setEvalBranchQuota(1500);
+    const params = comptime [_]clap.Param(clap.Help){
+        clap.parseParam("-h, --help Display this help and exit") catch unreachable,
+        clap.parseParam("-s         System name") catch unreachable,
+        clap.parseParam("-n         Network (domain) name") catch unreachable,
+        clap.parseParam("-r         Kernel Release number") catch unreachable,
+        clap.parseParam("-v         Kernel Version") catch unreachable,
+        clap.parseParam("-m         Machine (hardware) name") catch unreachable,
+        clap.parseParam("-a         All of the above") catch unreachable,
+    };
+
+    var args = try clap.ComptimeClap(clap.Help, &params).parse(allocator, ArgIterator, it);
+    defer args.deinit();
+
+    if (args.flag("--help")) {
+        try stdout.print("Usage: arch ", .{});
+        try clap.usage(stdout, &params);
+        try stdout.print("\n\nPrint system information.\n\n", .{});
+        try clap.help(stdout, &params);
+        return;
+    }
+
+    const name = std.os.uname();
+    var printed = false;
+
+    // Print the system name by default
+    if (args.flag("-s") or args.flag("-a") or (!args.flag("-r") and !args.flag("-n") and !args.flag("-v") and !args.flag("-m"))) {
+        try stdout.print("{}", .{name.sysname});
+        printed = true;
+    }
+
+    if (args.flag("-n") or args.flag("-a")) {
+        if (printed)
+            try stdout.print(" ", .{});
+        try stdout.print("{}", .{name.nodename});
+        printed = true;
+    }
+
+    if (args.flag("-r") or args.flag("-a")) {
+        if (printed)
+            try stdout.print(" ", .{});
+        try stdout.print("{}", .{name.release});
+        printed = true;
+    }
+
+    if (args.flag("-v") or args.flag("-a")) {
+        if (printed)
+            try stdout.print(" ", .{});
+        try stdout.print("{}", .{name.version});
+        printed = true;
+    }
+
+    if (args.flag("-m") or args.flag("-a")) {
+        if (printed)
+            try stdout.print(" ", .{});
+        try stdout.print("{}", .{name.machine});
+        printed = true;
+    }
+
+    try stdout.print("\n", .{});
 }
