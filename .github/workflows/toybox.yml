@@ -64,7 +64,7 @@ jobs:
     - uses: actions/checkout@master
       with:
         path: zigbox
-    - run: ../zkg/zig-cache/zkg fetch
+    - run: zkg fetch
       working-directory: zigbox
     - name: Build
       run: zig build
