@@ -48,9 +48,14 @@ jobs:
       with:
         repository: mattnite/zkg
         submodules: recursive
-
-    - name: Build and Install Zkg
-      run: zig build --prefix /usr install
+        path: zkg
+    - run: pwd
+    - run: cd zkg
+    - run: pwd
+    - name: Build Zkg
+      run: zig build
+    - run: cd $GITHUB_WORKSPACE
+    - run: ls
     - name: Build
       run: zig build
     - name: Test
