@@ -57,7 +57,7 @@ jobs:
         path: zkg
 
     - name: Build Zkg
-      run: zig build --prefix /usr install
+      run: sudo env "PATH=$PATH" zig build --prefix /usr install
       working-directory: zkg
       
     
