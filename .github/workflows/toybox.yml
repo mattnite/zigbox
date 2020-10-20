@@ -56,8 +56,9 @@ jobs:
         path: zkg
 
     - name: Build Zkg
-      run: zig build
+      run: runuser -l root zig build --prefix /usr install
       working-directory: zkg
+      
     
     - uses: actions/checkout@master
       with:
