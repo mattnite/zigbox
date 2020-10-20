@@ -47,19 +47,24 @@ jobs:
       uses: goto-bus-stop/setup-zig@v1
       with:
         version: master
-    - run: ls
+
     - name: Checkout Zkg
       uses: actions/checkout@master
       with:
         repository: mattnite/zkg
         submodules: recursive
         path: zkg
-    - run: ls
+
     - name: Build Zkg
       run: zig build
-    - run: cd $GITHUB_WORKSPACE
-    - run: ls
+      working-directory: zkg
+    
+    - uses: actions/checkout@master
+      with:
+        path: zigbox
     - name: Build
       run: zig build
+      working-directory: zigbox
     - name: Test
       run: VERBOSE=1 make tests
+      working-directory: zigbox
