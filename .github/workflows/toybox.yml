@@ -50,8 +50,7 @@ jobs:
         submodules: recursive
 
     - name: Build and Install Zkg
-      run: zig build
-    - run: ../zkg/zig-cache/zkg fetch
+      run: sudo zig build --prefix /usr install
     - name: Build
       run: zig build
     - name: Test
