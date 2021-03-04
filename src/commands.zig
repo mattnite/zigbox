@@ -6,12 +6,12 @@ const stdout = std.io.getStdOut().writer();
 const stdin = std.io.getStdIn().reader();
 const Allocator = std.mem.Allocator;
 
-pub fn arch(allocator: *Allocator, it: *ArgIterator) !void {
+pub fn arch(allocator: *Allocator, it: *clap.args.OsIterator) !void {
     const params = comptime [_]clap.Param(clap.Help){
         clap.parseParam("-h, --help Display this help and exit") catch unreachable,
     };
 
-    var args = try clap.ComptimeClap(clap.Help, &params).parse(allocator, ArgIterator, it);
+    var args = try clap.ComptimeClap(clap.Help, &params).parse(allocator, it, null);
     defer args.deinit();
 
     if (args.flag("--help")) {
@@ -22,10 +22,10 @@ pub fn arch(allocator: *Allocator, it: *ArgIterator) !void {
         return;
     }
 
-    try stdout.print("{}\n", .{std.os.uname().machine});
+    try stdout.print("{s}\n", .{std.os.uname().machine});
 }
 
-pub fn ascii(allocator: *Allocator, it: *ArgIterator) !void {
+pub fn ascii(allocator: *Allocator, it: *clap.args.OsIterator) !void {
     try stdout.writeAll(
         \\Dec Hex    Dec Hex    Dec Hex  Dec Hex  Dec Hex  Dec Hex   Dec Hex   Dec Hex
         \\  0 00 NUL  16 10 DLE  32 20    48 30 0  64 40 @  80 50 P   96 60 `  112 70 p
@@ -48,7 +48,7 @@ pub fn ascii(allocator: *Allocator, it: *ArgIterator) !void {
     );
 }
 
-pub fn base64(allocator: *Allocator, it: *ArgIterator) !void {
+pub fn base64(allocator: *Allocator, it: *clap.args.OsIterator) !void {
     const params = comptime [_]clap.Param(clap.Help){
         clap.parseParam("-h            Display this help and exit") catch unreachable,
         clap.parseParam("-d            Decode") catch unreachable,
@@ -56,7 +56,7 @@ pub fn base64(allocator: *Allocator, it: *ArgIterator) !void {
         clap.parseParam("-w <COLUMNS>  Wrap output at COLUMS (default 76, or 0 for nowrap)") catch unreachable,
     };
 
-    var args = try clap.ComptimeClap(clap.Help, &params).parse(allocator, ArgIterator, it);
+    var args = try clap.ComptimeClap(clap.Help, &params).parse(allocator, it, null);
     defer args.deinit();
 
     var buf_plain: [3 * std.mem.page_size]u8 = undefined;
@@ -67,10 +67,9 @@ pub fn base64(allocator: *Allocator, it: *ArgIterator) !void {
         const encoder = std.base64.standard_encoder;
         const n = try stdin.read(&buf_plain);
         const enc_n = std.base64.Base64Encoder.calcSize(n);
-        encoder.encode(buf_encoded[0..enc_n], buf_plain[0..n]);
+        const encoded = encoder.encode(buf_encoded[0..enc_n], buf_plain[0..n]);
 
-        _ = try stdout.write(buf_encoded[0..enc_n]);
-        _ = try stdout.write("\n");
+        try stdout.print("{s}\n", .{encoded});
 
         return error.Todo;
     } else {
@@ -78,7 +77,7 @@ pub fn base64(allocator: *Allocator, it: *ArgIterator) !void {
     }
 }
 
-pub fn uname(allocator: *Allocator, it: *ArgIterator) !void {
+pub fn uname(allocator: *Allocator, it: *clap.args.OsIterator) !void {
     @setEvalBranchQuota(1500);
     const params = comptime [_]clap.Param(clap.Help){
         clap.parseParam("-h, --help Display this help and exit") catch unreachable,
@@ -90,7 +89,7 @@ pub fn uname(allocator: *Allocator, it: *ArgIterator) !void {
         clap.parseParam("-a         All of the above") catch unreachable,
     };
 
-    var args = try clap.ComptimeClap(clap.Help, &params).parse(allocator, ArgIterator, it);
+    var args = try clap.ComptimeClap(clap.Help, &params).parse(allocator, it, null);
     defer args.deinit();
 
     if (args.flag("--help")) {
@@ -106,35 +105,35 @@ pub fn uname(allocator: *Allocator, it: *ArgIterator) !void {
 
     // Print the system name by default
     if (args.flag("-s") or args.flag("-a") or (!args.flag("-r") and !args.flag("-n") and !args.flag("-v") and !args.flag("-m"))) {
-        try stdout.print("{}", .{name.sysname});
+        try stdout.print("{s}", .{name.sysname});
         printed = true;
     }
 
     if (args.flag("-n") or args.flag("-a")) {
         if (printed)
             try stdout.print(" ", .{});
-        try stdout.print("{}", .{name.nodename});
+        try stdout.print("{s}", .{name.nodename});
         printed = true;
     }
 
     if (args.flag("-r") or args.flag("-a")) {
         if (printed)
             try stdout.print(" ", .{});
-        try stdout.print("{}", .{name.release});
+        try stdout.print("{s}", .{name.release});
         printed = true;
     }
 
     if (args.flag("-v") or args.flag("-a")) {
         if (printed)
             try stdout.print(" ", .{});
-        try stdout.print("{}", .{name.version});
+        try stdout.print("{s}", .{name.version});
         printed = true;
     }
 
     if (args.flag("-m") or args.flag("-a")) {
         if (printed)
             try stdout.print(" ", .{});
-        try stdout.print("{}", .{name.machine});
+        try stdout.print("{s}", .{name.machine});
         printed = true;
     }
 

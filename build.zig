@@ -1,5 +1,5 @@
 const Builder = @import("std").build.Builder;
-const pkgs = @import("deps.zig").pkgs;
+const pkgs = @import("gyro").pkgs;
 
 pub fn build(b: *Builder) void {
     var target = b.standardTargetOptions(.{});
@@ -16,7 +16,7 @@ pub fn build(b: *Builder) void {
     exe.single_threaded = true;
     exe.addIncludeDir(".");
     exe.addIncludeDir("lib");
-    exe.addPackage(pkgs.clap);
+    pkgs.addAllTo(exe);
 
     exe.addCSourceFile("main.c", &[_][]const u8{});
     inline for (lib_srcs) |src| {

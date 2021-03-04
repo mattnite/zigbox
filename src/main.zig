@@ -16,7 +16,7 @@ const stderr = std.io.getStdErr().writer();
 
 const Command = struct {
     name: []const u8,
-    func: fn (*Allocator, *ArgIterator) anyerror!void,
+    func: fn (*Allocator, *clap.args.OsIterator) anyerror!void,
 };
 
 fn compare(context: void, lhs_comm: Command, rhs_comm: Command) Order {
@@ -56,11 +56,10 @@ pub fn main() anyerror!void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
     var arena = std.heap.ArenaAllocator.init(&gpa.allocator);
 
-    var it = ArgIterator{
-        .inner = std.process.args().inner,
-    };
+    var it = try clap.args.OsIterator.init(&arena.allocator);
+    defer it.deinit();
 
-    _ = try it.next();
+    //_ = try it.next();
     const sub = Command{
         .name = (try it.next()) orelse return error.MissingCommand,
         .func = undefined,
