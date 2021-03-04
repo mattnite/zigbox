@@ -1,7 +1,0 @@
-clap:
-  root: /clap.zig
-  src:
-    github:
-      repo: zig-clap
-      user: Hejsil
-      ref: b805a2e39bdc7e428a0bf776ead8004658b921a8

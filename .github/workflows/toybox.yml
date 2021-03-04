@@ -5,32 +5,30 @@ on:
     - cron:  '0 2 * * *'
   push:
     branches: [ master ]
+  pull_request:
+    branches: [ master ]
 
 jobs:
   MacOS-10_15:
     runs-on: macos-10.15
 
     steps:
+    - name: Setup Zig
+      uses: goto-bus-stop/setup-zig@v1.3.0
+      with:
+        version: master
+    - uses: mattnite/setup-gyro@v1.0.0
     - uses: actions/checkout@v2
-    - name: Setup
-      run: brew install gnu-sed
-    - name: Configure
-      run: make macos_defconfig
-    - name: Build
-      run: make
-    - name: Test
-      run: VERBOSE=1 make tests
+    - run: gyro build
 
   Ubuntu-20_04:
     runs-on: ubuntu-20.04
 
     steps:
+    - name: Setup Zig
+      uses: goto-bus-stop/setup-zig@v1.3.0
+      with:
+        version: master
+    - uses: mattnite/setup-gyro@v1.0.0
     - uses: actions/checkout@v2
-    - name: Setup
-      run: sudo apt-get install build-essential
-    - name: Configure
-      run: make defconfig
-    - name: Build
-      run: make
-    - name: Test
-      run: VERBOSE=1 make tests
+    - run: gyro build
