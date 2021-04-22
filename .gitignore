@@ -12,3 +12,4 @@ zig-cache
 zig-deps
 deps.zig
 build_runner.zig
+.gyro

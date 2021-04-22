@@ -214,9 +214,9 @@ int posix_fallocate(int, off_t, off_t);
 
 // Android is missing some headers and functions
 // "generated/config.h" is included first
-#if CFG_TOYBOX_SHADOW
-#include <shadow.h>
-#endif
+//#if CFG_TOYBOX_SHADOW
+//#include <shadow.h>
+//#endif
 #if CFG_TOYBOX_UTMPX
 #include <utmpx.h>
 #else
