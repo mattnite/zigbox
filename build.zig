@@ -3,10 +3,6 @@ const pkgs = @import("deps.zig").pkgs;
 
 pub fn build(b: *Builder) void {
     var target = b.standardTargetOptions(.{});
-    if (target.abi == null) {
-        target.abi = .musl;
-    }
-
     const exe = b.addExecutable("toybox", "src/main.zig");
 
     // TODO: once C is obliterated, give user ability to select build mode
