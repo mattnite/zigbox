@@ -1,5 +1,5 @@
 const Builder = @import("std").build.Builder;
-const pkgs = @import("gyro").pkgs;
+const pkgs = @import("deps.zig").pkgs;
 
 pub fn build(b: *Builder) void {
     var target = b.standardTargetOptions(.{});
@@ -9,8 +9,7 @@ pub fn build(b: *Builder) void {
 
     const exe = b.addExecutable("toybox", "src/main.zig");
 
-    // TODO: for some reason we get SIGILL when not building C code with
-    // ReleaseFast
+    // TODO: once C is obliterated, give user ability to select build mode
     exe.setBuildMode(.ReleaseFast);
     exe.setTarget(target);
     exe.single_threaded = true;
