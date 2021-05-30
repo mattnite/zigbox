@@ -46,4 +46,4 @@ jobs:
         version: master
     - uses: mattnite/setup-gyro@v1.0.0
     - uses: actions/checkout@v2
-    - run: gyro build -Dtarget=linux-musl
+    - run: gyro build -Dtarget=x86_64-linux-musl
