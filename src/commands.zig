@@ -66,7 +66,7 @@ pub fn base64(allocator: *Allocator, it: *clap.args.OsIterator) !void {
     if (encoding) {
         const encoder = std.base64.standard_encoder;
         const n = try stdin.read(&buf_plain);
-        const enc_n = std.base64.Base64Encoder.calcSize(n);
+        const enc_n = encoder.calcSize(n);
         const encoded = encoder.encode(buf_encoded[0..enc_n], buf_plain[0..n]);
 
         try stdout.print("{s}\n", .{encoded});

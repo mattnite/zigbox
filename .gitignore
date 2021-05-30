@@ -12,3 +12,6 @@ zig-cache
 zig-deps
 deps.zig
 build_runner.zig
+zig-out
+.gyro
+toybox.o
