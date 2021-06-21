@@ -32,6 +32,6 @@ jobs:
       uses: goto-bus-stop/setup-zig@v1.3.0
       with:
         version: master
-    - uses: mattnite/setup-gyro@v1.0.0
+    - uses: mattnite/setup-gyro@v1
     - uses: actions/checkout@v2
     - run: gyro build -Dtarget=x86_64-linux-musl
