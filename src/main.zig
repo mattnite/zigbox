@@ -20,6 +20,7 @@ const Command = struct {
 };
 
 fn compare(context: void, lhs_comm: Command, rhs_comm: Command) Order {
+    _ = context;
     const lhs = lhs_comm.name;
     const rhs = rhs_comm.name;
 
@@ -37,10 +38,11 @@ fn compare(context: void, lhs_comm: Command, rhs_comm: Command) Order {
 }
 
 fn lessThan(context: void, lhs: Command, rhs: Command) bool {
+    _ = context;
     return compare({}, lhs, rhs) == .lt;
 }
 
-const commands = comptime blk: {
+const commands = blk: {
     var ret = [_]Command{
         .{ .name = "arch", .func = arch },
         .{ .name = "ascii", .func = ascii },

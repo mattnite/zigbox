@@ -7,11 +7,12 @@ const stdin = std.io.getStdIn().reader();
 const Allocator = std.mem.Allocator;
 
 pub fn arch(allocator: *Allocator, it: *clap.args.OsIterator) !void {
+    _ = allocator;
     const params = comptime [_]clap.Param(clap.Help){
         clap.parseParam("-h, --help Display this help and exit") catch unreachable,
     };
 
-    var args = try clap.ComptimeClap(clap.Help, &params).parse(allocator, it, null);
+    var args = try clap.ComptimeClap(clap.Help, &params).parse(it, .{});
     defer args.deinit();
 
     if (args.flag("--help")) {
@@ -26,6 +27,8 @@ pub fn arch(allocator: *Allocator, it: *clap.args.OsIterator) !void {
 }
 
 pub fn ascii(allocator: *Allocator, it: *clap.args.OsIterator) !void {
+    _ = allocator;
+    _ = it;
     try stdout.writeAll(
         \\Dec Hex    Dec Hex    Dec Hex  Dec Hex  Dec Hex  Dec Hex   Dec Hex   Dec Hex
         \\  0 00 NUL  16 10 DLE  32 20    48 30 0  64 40 @  80 50 P   96 60 `  112 70 p
@@ -49,6 +52,7 @@ pub fn ascii(allocator: *Allocator, it: *clap.args.OsIterator) !void {
 }
 
 pub fn base64(allocator: *Allocator, it: *clap.args.OsIterator) !void {
+    _ = allocator;
     const params = comptime [_]clap.Param(clap.Help){
         clap.parseParam("-h            Display this help and exit") catch unreachable,
         clap.parseParam("-d            Decode") catch unreachable,
@@ -56,7 +60,7 @@ pub fn base64(allocator: *Allocator, it: *clap.args.OsIterator) !void {
         clap.parseParam("-w <COLUMNS>  Wrap output at COLUMS (default 76, or 0 for nowrap)") catch unreachable,
     };
 
-    var args = try clap.ComptimeClap(clap.Help, &params).parse(allocator, it, null);
+    var args = try clap.ComptimeClap(clap.Help, &params).parse(it, .{});
     defer args.deinit();
 
     var buf_plain: [3 * std.mem.page_size]u8 = undefined;
@@ -78,6 +82,7 @@ pub fn base64(allocator: *Allocator, it: *clap.args.OsIterator) !void {
 }
 
 pub fn uname(allocator: *Allocator, it: *clap.args.OsIterator) !void {
+    _ = allocator;
     @setEvalBranchQuota(1500);
     const params = comptime [_]clap.Param(clap.Help){
         clap.parseParam("-h, --help Display this help and exit") catch unreachable,
@@ -89,7 +94,7 @@ pub fn uname(allocator: *Allocator, it: *clap.args.OsIterator) !void {
         clap.parseParam("-a         All of the above") catch unreachable,
     };
 
-    var args = try clap.ComptimeClap(clap.Help, &params).parse(allocator, it, null);
+    var args = try clap.ComptimeClap(clap.Help, &params).parse(it, .{});
     defer args.deinit();
 
     if (args.flag("--help")) {
