@@ -1,5 +1,4 @@
-usingnamespace @import("commands.zig");
-usingnamespace std.sort;
+const cmds = @import("commands.zig");
 
 const std = @import("std");
 const clap = @import("clap");
@@ -16,11 +15,10 @@ const stderr = std.io.getStdErr().writer();
 
 const Command = struct {
     name: []const u8,
-    func: fn (*Allocator, *clap.args.OsIterator) anyerror!void,
+    func: fn (Allocator, *std.process.ArgIterator) anyerror!void,
 };
 
-fn compare(context: void, lhs_comm: Command, rhs_comm: Command) Order {
-    _ = context;
+fn compare(_: void, lhs_comm: Command, rhs_comm: Command) Order {
     const lhs = lhs_comm.name;
     const rhs = rhs_comm.name;
 
@@ -37,38 +35,46 @@ fn compare(context: void, lhs_comm: Command, rhs_comm: Command) Order {
         Order.eq;
 }
 
-fn lessThan(context: void, lhs: Command, rhs: Command) bool {
-    _ = context;
+fn lessThan(_: void, lhs: Command, rhs: Command) bool {
     return compare({}, lhs, rhs) == .lt;
 }
 
 const commands = blk: {
     var ret = [_]Command{
-        .{ .name = "arch", .func = arch },
-        .{ .name = "ascii", .func = ascii },
-        .{ .name = "base64", .func = base64 },
-        .{ .name = "uname", .func = uname },
+        .{ .name = "arch", .func = cmds.arch },
+        .{ .name = "ascii", .func = cmds.ascii },
+        .{ .name = "base64", .func = cmds.base64 },
+        .{ .name = "uname", .func = cmds.uname },
     };
 
-    sort(Command, &ret, {}, lessThan);
+    std.sort.sort(Command, &ret, {}, lessThan);
     break :blk ret;
 };
 
 pub fn main() anyerror!void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
-    var arena = std.heap.ArenaAllocator.init(&gpa.allocator);
+    defer _ = gpa.deinit();
 
-    var it = try clap.args.OsIterator.init(&arena.allocator);
+    var it = try std.process.ArgIterator.initWithAllocator(gpa.allocator());
     defer it.deinit();
 
-    //_ = try it.next();
+    // skip process name
+    _ = it.next();
+
     const sub = Command{
-        .name = (try it.next()) orelse return error.MissingCommand,
+        .name = (it.next()) orelse {
+            try stderr.writeAll("no subcommand selected, choose one of the following:\n\n");
+            for (commands) |cmd|
+                try stderr.print("    {s}\n", .{cmd.name});
+
+            try stderr.writeByte('\n');
+            return error.MissingCommand;
+        },
         .func = undefined,
     };
 
-    if (binarySearch(Command, sub, &commands, {}, compare)) |index| {
-        try commands[index].func(&arena.allocator, &it);
+    if (std.sort.binarySearch(Command, sub, &commands, {}, compare)) |index| {
+        try commands[index].func(gpa.allocator(), &it);
     } else {
         _ = c.tb_main(@intCast(c_int, std.os.argv.len), @ptrCast([*:null]?[*:0]u8, std.os.argv));
     }

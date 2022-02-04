@@ -1,2 +1,6 @@
 deps:
-  mattnite/clap: ^0.4.0
+  clap:
+    git:
+      url: "https://github.com/Hejsil/zig-clap.git"
+      ref: master
+      root: clap.zig

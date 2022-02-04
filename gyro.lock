@@ -1,1 +1,1 @@
-pkg default mattnite clap 0.4.1
+git https://github.com/Hejsil/zig-clap.git master clap.zig 7188a9fc85f6aa0f71a4cb7966f8b0a044f29e02
