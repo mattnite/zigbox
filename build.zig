@@ -8,10 +8,10 @@ pub fn build(b: *Builder) void {
             .abi = .musl,
         },
     });
-    const exe = b.addExecutable("toybox", "src/main.zig");
+    const exe = b.addExecutable("zigbox", "src/main.zig");
 
     // TODO: once C is obliterated, give user ability to select build mode
-    exe.setBuildMode(.ReleaseFast);
+    exe.setBuildMode(.ReleaseSmall);
     exe.setTarget(target);
     exe.single_threaded = true;
     exe.addIncludeDir(".");
@@ -89,7 +89,6 @@ const c_srcs = [_][]const u8{
     "posix/renice.c",
     "posix/ls.c",
     "posix/grep.c",
-    "posix/uname.c",
     "posix/cpio.c",
     "posix/tail.c",
     "posix/tee.c",
@@ -132,7 +131,6 @@ const c_srcs = [_][]const u8{
     "net/netstat.c",
     "net/ifconfig.c",
     "net/sntp.c",
-    "other/ascii.c",
     "other/uuidgen.c",
     "other/rmmod.c",
     "other/nsenter.c",
@@ -206,7 +204,6 @@ const c_srcs = [_][]const u8{
     "other/oneit.c",
     "other/chroot.c",
     "other/fallocate.c",
-    "other/base64.c",
     "other/taskset.c",
     "other/swapon.c",
     "other/bzcat.c",

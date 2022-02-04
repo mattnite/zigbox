@@ -3,15 +3,22 @@ const std = @import("std");
 const ArgIterator = @import("arg_iterator.zig");
 
 const stdout = std.io.getStdOut().writer();
+const stderr = std.io.getStdOut().writer();
 const stdin = std.io.getStdIn().reader();
 const Allocator = std.mem.Allocator;
 
-pub fn arch(allocator: *Allocator, it: *clap.args.OsIterator) !void {
+pub fn arch(allocator: Allocator, it: *std.process.ArgIterator) !void {
+    _ = allocator;
     const params = comptime [_]clap.Param(clap.Help){
         clap.parseParam("-h, --help Display this help and exit") catch unreachable,
     };
 
-    var args = try clap.ComptimeClap(clap.Help, &params).parse(allocator, it, null);
+    var diag = clap.Diagnostic{};
+    var args = clap.parseEx(clap.Help, &params, it, .{ .diagnostic = &diag }) catch |err| {
+        // Report useful error and exit
+        diag.report(stderr, err) catch {};
+        return err;
+    };
     defer args.deinit();
 
     if (args.flag("--help")) {
@@ -25,7 +32,9 @@ pub fn arch(allocator: *Allocator, it: *clap.args.OsIterator) !void {
     try stdout.print("{s}\n", .{std.os.uname().machine});
 }
 
-pub fn ascii(allocator: *Allocator, it: *clap.args.OsIterator) !void {
+pub fn ascii(allocator: Allocator, it: *std.process.ArgIterator) !void {
+    _ = allocator;
+    _ = it;
     try stdout.writeAll(
         \\Dec Hex    Dec Hex    Dec Hex  Dec Hex  Dec Hex  Dec Hex   Dec Hex   Dec Hex
         \\  0 00 NUL  16 10 DLE  32 20    48 30 0  64 40 @  80 50 P   96 60 `  112 70 p
@@ -48,7 +57,8 @@ pub fn ascii(allocator: *Allocator, it: *clap.args.OsIterator) !void {
     );
 }
 
-pub fn base64(allocator: *Allocator, it: *clap.args.OsIterator) !void {
+pub fn base64(allocator: Allocator, it: *std.process.ArgIterator) !void {
+    _ = allocator;
     const params = comptime [_]clap.Param(clap.Help){
         clap.parseParam("-h            Display this help and exit") catch unreachable,
         clap.parseParam("-d            Decode") catch unreachable,
@@ -56,7 +66,12 @@ pub fn base64(allocator: *Allocator, it: *clap.args.OsIterator) !void {
         clap.parseParam("-w <COLUMNS>  Wrap output at COLUMS (default 76, or 0 for nowrap)") catch unreachable,
     };
 
-    var args = try clap.ComptimeClap(clap.Help, &params).parse(allocator, it, null);
+    var diag = clap.Diagnostic{};
+    var args = clap.parseEx(clap.Help, &params, it, .{ .diagnostic = &diag }) catch |err| {
+        // Report useful error and exit
+        diag.report(stderr, err) catch {};
+        return err;
+    };
     defer args.deinit();
 
     var buf_plain: [3 * std.mem.page_size]u8 = undefined;
@@ -64,10 +79,10 @@ pub fn base64(allocator: *Allocator, it: *clap.args.OsIterator) !void {
     const encoding = !args.flag("-d");
 
     if (encoding) {
-        const encoder = std.base64.standard_encoder;
+        const Encoder = std.base64.standard.Encoder;
         const n = try stdin.read(&buf_plain);
-        const enc_n = encoder.calcSize(n);
-        const encoded = encoder.encode(buf_encoded[0..enc_n], buf_plain[0..n]);
+        const enc_n = Encoder.calcSize(n);
+        const encoded = Encoder.encode(buf_encoded[0..enc_n], buf_plain[0..n]);
 
         try stdout.print("{s}\n", .{encoded});
 
@@ -77,19 +92,25 @@ pub fn base64(allocator: *Allocator, it: *clap.args.OsIterator) !void {
     }
 }
 
-pub fn uname(allocator: *Allocator, it: *clap.args.OsIterator) !void {
+pub fn uname(allocator: Allocator, it: *std.process.ArgIterator) !void {
+    _ = allocator;
     @setEvalBranchQuota(1500);
     const params = comptime [_]clap.Param(clap.Help){
-        clap.parseParam("-h, --help Display this help and exit") catch unreachable,
-        clap.parseParam("-s         System name") catch unreachable,
-        clap.parseParam("-n         Network (domain) name") catch unreachable,
-        clap.parseParam("-r         Kernel Release number") catch unreachable,
-        clap.parseParam("-v         Kernel Version") catch unreachable,
-        clap.parseParam("-m         Machine (hardware) name") catch unreachable,
-        clap.parseParam("-a         All of the above") catch unreachable,
+        clap.parseParam("-h, --help  Display this help and exit") catch unreachable,
+        clap.parseParam("-s          System name") catch unreachable,
+        clap.parseParam("-n          Network (domain) name") catch unreachable,
+        clap.parseParam("-r          Kernel Release number") catch unreachable,
+        clap.parseParam("-v          Kernel Version") catch unreachable,
+        clap.parseParam("-m          Machine (hardware) name") catch unreachable,
+        clap.parseParam("-a          All of the above") catch unreachable,
     };
 
-    var args = try clap.ComptimeClap(clap.Help, &params).parse(allocator, it, null);
+    var diag = clap.Diagnostic{};
+    var args = clap.parseEx(clap.Help, &params, it, .{ .diagnostic = &diag }) catch |err| {
+        // Report useful error and exit
+        diag.report(stderr, err) catch {};
+        return err;
+    };
     defer args.deinit();
 
     if (args.flag("--help")) {
